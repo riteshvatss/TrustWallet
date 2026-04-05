@@ -1,0 +1,10 @@
+export async function getWalletScore(wallet) {
+  const res = await fetch("https://trustwallet-backend-8a2x.onrender.com/v1/getScore", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ wallet }),
+      });
+  return res.json();
+}

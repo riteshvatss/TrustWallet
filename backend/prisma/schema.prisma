@@ -16,8 +16,10 @@ model Score{
   id Int @id @default(autoincrement())
   address String @unique
   score Float
+  confidence String @default("low")
   last_Signature String
   date DateTime
   scoreLable String @default("hel")
+  reasons String[] @default([])
 
 }

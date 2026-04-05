@@ -1,0 +1,14 @@
+{
+  "name": "@riteshh123/walletscore",
+  "version": "1.0.2",
+  "main": "src/index.js",
+   "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Its a sdk for getting the score of the solana wallet"
+ 
+}

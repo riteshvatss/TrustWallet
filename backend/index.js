@@ -78,12 +78,13 @@ async function getScore(publickey) {
 
 
     
-    const balance_lamports=await connection.getBalance(wallet_Address);
+   // const balance_lamports=await connection.getBalance(wallet_Address);
     const max_expected_age=52;
     const target_tx=50;
     const max_last_activeweeks=4;
     
-    // console.log(Wallet_weeks_Transactionhappened);
+ 
+
     const consistency=Wallet_weeks_Transactionhappened/total_transaction_periodWeeks;
    
     const burst=max_transaction_perweek/total_transactions;
@@ -100,24 +101,57 @@ async function getScore(publickey) {
     ((Math.min((total_transactions/target_tx),1))*0.2)+
     ((1-Math.min((wallet_dead_from_lastWeeks/max_last_activeweeks),1))*0.1)-(burst_penalty*0.01);
 
-    score=score*100
+    score=score*100;
+
+    const reasons = [];
+
+if (wallet_age_Weeks < 2) {
+  reasons.push("Wallet is very new");
+}
+
+if (burst_penalty >= 5) {
+  reasons.push("Suspicious burst activity detected");
+}
+
+if (wallet_dead_from_lastWeeks > 3) {
+  reasons.push("Wallet inactive for long periods");
+}
+
+if (total_transactions < 10) {
+  reasons.push("Very low transaction history");
+}
+
+if (consistency < 0.3) {
+  reasons.push("Unstable transaction behavior");
+}
 
     let scoreLable="";
     if(score<35){
-        scoreLable="bad";
+        scoreLable="Risky";
     }else if(score<=60){
-        scoreLable="good";
+        scoreLable="Moderately Safe";
     }
     else if(score<=80){
-        scoreLable="very good"
+        scoreLable="Safe"
     }
     else {
-        scoreLable="excellent"
+        scoreLable="Highly Safe"
     }
+
+    let confidence="Low";
+    if(total_transactions>50){
+        confidence="High"
+    }
+    else if(total_transactions>20){
+        confidence="Medium"
+    }
+
     let info={
         last_Signature:last_Signature,
         score:Math.floor(score),
-        scoreLable:scoreLable
+        scoreLable:scoreLable,
+        reasons:reasons,
+        confidence:confidence
     }
 
     return(info)
@@ -131,7 +165,7 @@ app.post("/v1/getScore",async(req,res)=>{
    
     if(!wallet){
         return res.status(300).json({
-            err:"wront input"
+            err:"wrong input"
         });
     }
     
@@ -145,21 +179,25 @@ app.post("/v1/getScore",async(req,res)=>{
     if(check_wallet){
         const last_updatedDay=Math.floor(((new Date()).getTime()-check_wallet.date.getTime())/(1000*3600*24));
 
-        if(last_updatedDay>=1){
+        if(last_updatedDay>=0){
                 const info=await getScore(wallet);
+              
                const wallet_Info= await prisma.score.update({
                     data:{
                             date:new Date(),
                             last_Signature:info.last_Signature,
                             score:info.score,
-                            scoreLable:info.scoreLable
+                            scoreLable:info.scoreLable,
+                            reasons:info.reasons,
+                            confidence:info.confidence
+
 
                     },
                     where:{
                         address:wallet
                     }
                 });
-                console.log(wallet_Info);
+              
                 return res.status(200).json(wallet_Info);
 
         }
@@ -178,6 +216,8 @@ app.post("/v1/getScore",async(req,res)=>{
                 last_Signature:info.last_Signature,
                 date:new Date(),
                 scoreLable:getInfo.scoreLable,
+                reasons:info.reasons,
+                confidence:info.confidence
 
             }
         }

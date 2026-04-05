@@ -9,7 +9,7 @@ export default function App() {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:3000/v1/getScore", {
+      const res = await fetch("https://trustwallet-backend-8a2x.onrender.com/v1/getScore", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -160,6 +160,34 @@ export default function App() {
               }}
             >
               {score.scoreLable}
+            </div>
+             <div
+              style={{
+                display: "inline-block",
+                padding: "6px 12px",
+                borderRadius: "999px",
+                background: getLabelColor(score.score),
+                color: getScoreColor(score.score),
+                fontSize: 12,
+                fontWeight: 600,
+                marginBottom: 12,
+              }}
+            >
+                {score.confidence}
+            </div>
+             <div
+              style={{
+                display: "inline-block",
+                padding: "6px 12px",
+                borderRadius: "999px",
+                background: getLabelColor(score.score),
+                color: getScoreColor(score.score),
+                fontSize: 12,
+                fontWeight: 600,
+                marginBottom: 12,
+              }}
+            >
+              {score.reasons}
             </div>
 
             <button
