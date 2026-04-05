@@ -14,11 +14,15 @@
   "description": "",
   "dependencies": {
     "@prisma/adapter-pg": "^7.6.0",
-    "@prisma/client": "^7.6.0",
+    "@prisma/client": "latest",
     "@solana/web3.js": "^1.98.4",
     "cors": "^2.8.6",
     "dotenv": "^17.4.0",
     "express": "^5.2.1",
     "prisma": "^7.6.0"
+  },
+   "devDependencies": {
+    "prisma": "latest"
   }
+  
 }
