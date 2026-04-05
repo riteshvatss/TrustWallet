@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Wallet Score",
+  "version": "1.0",
+  "description": "Its an extension used for getting wallet score",
+
+  "permissions": ["activeTab"],
+
+  "action": {
+    "default_popup": "index.html"
+  }
+}
