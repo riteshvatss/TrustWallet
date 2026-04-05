@@ -2,9 +2,10 @@ import express from 'express';
 import { prisma } from './lib/prisma.js';
 import cors from "cors";
 const app=new express();
+const port=3000;
 
 app.use(cors());
-const port =3000;
+
 import {PublicKey, Connection,clusterApiUrl } from '@solana/web3.js';
 app.use(express.json());
 
