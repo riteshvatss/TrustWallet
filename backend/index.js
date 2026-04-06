@@ -13,7 +13,7 @@ app.use(express.json());
 
 async function getScore(publickey) {
         
-    const connection=new Connection(clusterApiUrl("devnet"),"confirmed");
+    const connection=new Connection(clusterApiUrl("mainnet-beta"),"confirmed");
 
 
 
