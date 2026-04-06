@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@riteshh123/wallet-audit": "^1.0.5",
     "@riteshh123/walletscore": "^1.0.2"
   }
 }

@@ -1,7 +1,8 @@
-import { getWalletScore } from "@riteshh123/walletscore";
+import { analyzeWallet } from "@riteshh123/wallet-audit";
 
 async function testit(wallet){
-    const getit =await getWalletScore(wallet);
+   
+    const getit =await analyzeWallet(wallet);
     console.log(new Date());
     console.log(getit);
 }

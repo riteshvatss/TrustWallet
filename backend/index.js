@@ -179,7 +179,7 @@ app.post("/v1/getScore",async(req,res)=>{
     if(check_wallet){
         const last_updatedDay=Math.floor(((new Date()).getTime()-check_wallet.date.getTime())/(1000*3600*24));
 
-        if(last_updatedDay>=0){
+        if(last_updatedDay>=1){
                 const info=await getScore(wallet);
               
                const wallet_Info= await prisma.score.update({
