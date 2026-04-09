@@ -24,8 +24,9 @@ async function getScore(publickey) {
     }
 
     let wallet_Address=new PublicKey(publickey);
-
+   
     let signatures=await connection.getSignaturesForAddress(wallet_Address,signatureoptions);
+   
 
     let last_blockhashTime=0;
     let neweset_BlockhashTime=0;
@@ -107,22 +108,32 @@ async function getScore(publickey) {
 
 if (wallet_age_Weeks < 2) {
   reasons.push("Wallet is very new");
+}else if(wallet_age_Weeks>52){
+    reasons.push("Wallet is of old age");
 }
 
-if (burst_penalty >= 5) {
+if (burst_penalty >= 5 &&consistency<0.5) {
   reasons.push("Suspicious burst activity detected");
 }
 
 if (wallet_dead_from_lastWeeks > 3) {
   reasons.push("Wallet inactive for long periods");
+}else if(wallet_dead_from_lastWeeks<3){
+    reasons.push("wallet is recently active");
 }
 
 if (total_transactions < 10) {
   reasons.push("Very low transaction history");
+}else if(total_transactions>60 &&burst_penalty==0){
+    reasons.push("Good transaction history");
 }
+
+
 
 if (consistency < 0.3) {
   reasons.push("Unstable transaction behavior");
+}else if(consistency>0.65){
+    reasons.push("wallet have stable consistency");
 }
 
     let scoreLable="";
@@ -207,7 +218,9 @@ app.post("/v1/getScore",async(req,res)=>{
         
     }
     
-
+    const info=await getScore(wallet);
+    
+    
     const getInfo=await prisma.score.create(
         {
             data:{
@@ -215,16 +228,16 @@ app.post("/v1/getScore",async(req,res)=>{
                 score:info.score,
                 last_Signature:info.last_Signature,
                 date:new Date(),
-                scoreLable:getInfo.scoreLable,
+                scoreLable:info.scoreLable,
                 reasons:info.reasons,
                 confidence:info.confidence
 
             }
-        }
+        },
     )    
   
     
-    return res.json(getInfo);
+    return res.status(200).json(getInfo);
 }catch{
     return res.status(500).json({msg:"Server Not found"});
 }
