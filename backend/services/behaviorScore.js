@@ -1,29 +1,40 @@
 import {PublicKey, Connection,clusterApiUrl } from '@solana/web3.js';
+import { flowbehavior } from './flowbhavior.js';
+import 'dotenv/config';
 
 export async function behaviorScore(walletAddress){
         
-    const connection=new Connection(clusterApiUrl("mainnet-beta"),"confirmed");
+    //const connection=new Connection(clusterApiUrl("mainnet-beta"),"confirmed");
 
+    const connection=new Connection(process.env.RPC_Mainet);
+  
 
     let signatureoptions={
         
-        limit:1000,
+        limit:30,
         commitment:"finalized",
     }
-                                                                                                                                                                                   
+
     let wallet_Address=new PublicKey(walletAddress);
    
     let signatures=await connection.getSignaturesForAddress(wallet_Address,signatureoptions);
    
+    console.log(signatures);
+    if(signatures.length===0){
+    return {
+        score:10,
+        scoreLable:"Risky",
+        reasons:["No transaction history found"],
+        confidence:"Low",
+        last_Signature:"null"
+    }}
+
 
     let last_blockhashTime=0;
     let neweset_BlockhashTime=0;
-
-
-
     let config={
         commitment:"finalized",
-        maxSupportedTransactionVerison:0,
+        maxSupportedTransactionVersion:0,
     }
     let last_Signature="";
 
@@ -57,24 +68,24 @@ export async function behaviorScore(walletAddress){
    
     let Wallet_weeks_Transactionhappened=0;
     let max_transaction_perweek=0;
-    arr.map(val=>{
+    for(const val of arr){
         if(val>0){
             if(val>max_transaction_perweek){
                 max_transaction_perweek=val;
             }
             Wallet_weeks_Transactionhappened++;
-    }})
+    }}
 
-
-    
-   // const balance_lamports=await connection.getBalance(wallet_Address);
     const max_expected_age=52;
     const target_tx=50;
     const max_last_activeweeks=4;
     
  
 
-    const consistency=Wallet_weeks_Transactionhappened/total_transaction_periodWeeks;
+   const consistency =
+ total_transaction_periodWeeks > 0
+ ? Wallet_weeks_Transactionhappened / total_transaction_periodWeeks
+ : 0;
    
     const burst=max_transaction_perweek/total_transactions;
     let burst_penalty=0;
@@ -92,7 +103,11 @@ export async function behaviorScore(walletAddress){
 
     score=score*100;
 
-    const reasons = [];
+    const report=await flowbehavior(signatures,wallet_Address);
+
+    let reasons = report.flags;
+    score=score+report.score;
+    score=score/2;
 
 if (wallet_age_Weeks < 2) {
   reasons.push("Wallet is very new");
@@ -144,7 +159,7 @@ if (consistency < 0.3) {
     else if(total_transactions>20){
         confidence="Medium"
     }
-
+   
     let info={
         last_Signature:last_Signature,
         score:Math.floor(score),

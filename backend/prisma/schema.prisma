@@ -17,7 +17,7 @@ model Score{
   address String @unique
   score Float
   confidence String @default("low")
-  last_Signature String
+  last_Signature String 
   date DateTime
   scoreLable String @default("hel")
   reasons String[] @default([])

@@ -21,7 +21,7 @@ app.post("/v1/getScore",async(req,res)=>{
     console.log(wallet);
    
     if(!wallet){
-        return res.status(300).json({
+        return res.status(400).json({
             err:"wrong input"
         });
     }
@@ -36,7 +36,7 @@ app.post("/v1/getScore",async(req,res)=>{
     if(check_wallet){
         const last_updatedDay=Math.floor(((new Date()).getTime()-check_wallet.date.getTime())/(1000*3600*24));
 
-        if(last_updatedDay>=1){
+        if(last_updatedDay>=0){
                 const info=await behaviorScore(wallet);
               
                const wallet_Info= await prisma.score.update({
@@ -84,8 +84,12 @@ app.post("/v1/getScore",async(req,res)=>{
   
     
     return res.status(200).json(getInfo);
-}catch{
-    return res.status(500).json({msg:"Server Not found"});
+}catch(err){
+    console.log(err);
+    return res.status(500).json({
+        msg:"Internal Server Error",
+        error:err.message
+    });
 }
 
 })
