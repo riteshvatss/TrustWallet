@@ -1,4 +1,4 @@
-import {PublicKey, Connection,clusterApiUrl } from '@solana/web3.js';
+import {PublicKey, Connection } from '@solana/web3.js';
 import { flowbehavior } from './flowbhavior.js';
 import 'dotenv/config';
 
@@ -6,20 +6,25 @@ export async function behaviorScore(walletAddress){
         
     //const connection=new Connection(clusterApiUrl("mainnet-beta"),"confirmed");
 
-    const connection=new Connection(process.env.RPC_Mainet);
+   
+    const connection = new Connection(process.env.RPC_Mainet, "confirmed");
   
 
-    let signatureoptions={
+    let signaturesoptions={
         
-        limit:30,
-        commitment:"finalized",
+        limit:50,
+        commitment:"confirmed",
     }
 
     let wallet_Address=new PublicKey(walletAddress);
    
-    let signatures=await connection.getSignaturesForAddress(wallet_Address,signatureoptions);
-   
-    console.log(signatures);
+    let signatures = await connection.getSignaturesForAddress(
+  wallet_Address,
+  signaturesoptions
+);
+
+
+
     if(signatures.length===0){
     return {
         score:10,
